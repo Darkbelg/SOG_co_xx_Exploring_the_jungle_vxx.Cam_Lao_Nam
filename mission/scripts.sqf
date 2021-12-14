@@ -96,15 +96,25 @@ _buildings = nearestObjects [getMarkerPos "caves", ["Land_vn_cave_base"], 500];
 systemChat format ["Buildings: %1" , _buildings];
 
 	{
-		if (random 100 <= 35) then {
-			
-		};
-		_postions = _x call BIS_fnc_buildingPositions;
+		_building = _x;
+		_postions = _building call BIS_fnc_buildingPositions;
 		_group = createGroup [east,true];
 		systemChat format ["_group: %1" , _group];
 		{
-				_unit = _group createUnit [selectRandom["vn_o_men_vc_local_01", "vn_o_men_vc_local_02", "vn_o_men_vc_local_03", "vn_o_men_vc_local_04", "vn_o_men_vc_local_05", "vn_o_men_vc_local_06", "vn_o_men_vc_local_10", "vn_o_men_vc_local_11", "vn_o_men_vc_local_12", "vn_o_men_vc_local_15", "vn_o_men_vc_local_16", "vn_o_men_vc_local_17", "vn_o_men_vc_local_18", "vn_o_men_vc_local_19", "vn_o_men_vc_local_20", "vn_o_men_vc_local_21", "vn_o_men_vc_local_24", "vn_o_men_vc_local_25", "vn_o_men_vc_local_26", "vn_o_men_vc_local_31"], _x, [],0,"CAN_COLLIDE"];
-				_unit disableAI "PATH";
+			if ((random 100) >= 20 && !(typeOf _building == "Land_vn_cave_07")) then {
+				continue;
+			};
+
+			_unit = _group createUnit [selectRandom["vn_o_men_vc_local_01", "vn_o_men_vc_local_02", "vn_o_men_vc_local_03", "vn_o_men_vc_local_04", "vn_o_men_vc_local_05", "vn_o_men_vc_local_06", "vn_o_men_vc_local_10", "vn_o_men_vc_local_11", "vn_o_men_vc_local_12", "vn_o_men_vc_local_15", "vn_o_men_vc_local_16", "vn_o_men_vc_local_17", "vn_o_men_vc_local_18", "vn_o_men_vc_local_19", "vn_o_men_vc_local_20", "vn_o_men_vc_local_21", "vn_o_men_vc_local_24", "vn_o_men_vc_local_25", "vn_o_men_vc_local_26", "vn_o_men_vc_local_31"], _x, [],0,"CAN_COLLIDE"];
+			_unit disableAI "PATH";
+				_unit addEventHandler ["Killed", {
+					params ["_unit", "_killer", "_instigator", "_useEffects"];
+					if (_unit checkAIFeature "PATH" == false) then {
+						{
+							_x enableAI "PATH";							
+						} forEach units (group _unit);
+					};
+				}];
 		} forEach _postions;
 	} forEach _buildings;
 
@@ -113,3 +123,5 @@ systemChat format ["Buildings: %1" , _buildings];
 		civilian revealMine _x;
 	} forEach allMines;
 };
+
+
